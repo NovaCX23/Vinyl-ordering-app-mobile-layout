@@ -1,14 +1,14 @@
-import { vinylCatalog } from "./data.js";
+import { vinylCatalog } from "./data.js"
 
 const albumsContainer = document.getElementById("albums-container")
 
-const itemsList = document.getElementById("item-list"); 
-const checkoutContainer = document.querySelector(".checkout-container");
+const itemsList = document.getElementById("item-list")
+const checkoutContainer = document.querySelector(".checkout-container")
 const completeOrderBtn = document.querySelector(".complete-order-btn")
 
 const modal = document.getElementById("modal")
 const modalCloseBtn = document.getElementById("modal-close-btn")
-const consentForm = document.getElementById("consent-form");
+const consentForm = document.getElementById("consent-form")
 
 let checkoutItems = []
 
@@ -24,7 +24,7 @@ albumsContainer.addEventListener("click", (e) =>{
 itemsList.addEventListener("click", (e) => { 
     if (e.target.classList.contains("remove-btn")) {
         const albumId = e.target.dataset.albumId
-        handleRemoveClick(albumId);
+        handleRemoveClick(albumId)
     }
 })
 completeOrderBtn.addEventListener("click", () => {
@@ -33,26 +33,58 @@ completeOrderBtn.addEventListener("click", () => {
 
 
 modalCloseBtn.addEventListener("click", () => {
-    consentForm.reset();
+    consentForm.reset()
     modal.classList.add("hidden")
 })
 consentForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const customerName = document.getElementById("name").value;
-    
-    modal.classList.add("hidden");
+    e.preventDefault()
+
+    const customerName = document.getElementById("name").value
+
+    modal.classList.add("hidden")
+
     checkoutContainer.innerHTML = `
         <div class="thank-you-message">
-            <h2>Thanks, ${customerName}! Your order is on its way!</h2>
-        </div>
-    `
-    consentForm.reset();
-    checkoutItems = [];
-})
+            <h2>Thanks, ${customerName}! Your order is on the way!</h2>
 
+            <div class="rating-container">
+                <p>How was your experience?</p>
+                <div class="star-rating">
+                    <span class="star" data-rating="1">&#9733;</span>
+                    <span class="star" data-rating="2">&#9733;</span>
+                    <span class="star" data-rating="3">&#9733;</span>
+                    <span class="star" data-rating="4">&#9733;</span>
+                    <span class="star" data-rating="5">&#9733;</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const starRatingContainer = document.querySelector(".star-rating");
+    if (starRatingContainer) {
+        starRatingContainer.addEventListener("click", (event) => {
+            const selectedStar = event.target.closest(".star")
+            if (selectedStar) {
+                const rating = parseInt(selectedStar.dataset.rating)
+                const stars = starRatingContainer.querySelectorAll(".star")
+                
+                stars.forEach(star => {
+                    if (parseInt(star.dataset.rating) <= rating) {
+                        star.classList.add("filled")
+                    } else {
+                        star.classList.remove("filled")
+                    }
+                });
+            }
+        });
+    }
+
+    checkoutItems = []
+    consentForm.reset()
+});
 
 function handleAddClick(albumId){
-    const albumToAdd = vinylCatalog.find(album => album.id == albumId);
+    const albumToAdd = vinylCatalog.find(album => album.id == albumId)
     if(albumToAdd){
         checkoutItems.push(albumToAdd)
         renderCheckout()
@@ -60,10 +92,10 @@ function handleAddClick(albumId){
 }
 
 function handleRemoveClick(albumId) {
-    const itemIndex = checkoutItems.findIndex(item => item.id == albumId);
+    const itemIndex = checkoutItems.findIndex(item => item.id == albumId)
     if (itemIndex > -1) {
-        checkoutItems.splice(itemIndex, 1);
-        renderCheckout();
+        checkoutItems.splice(itemIndex, 1)
+        renderCheckout()
     }
 }
 
@@ -93,7 +125,7 @@ function getAlbumHtml(albums){
 
 
 function renderCheckout() {
-    let totalPrice = 0;
+    let totalPrice = 0
 
     if (checkoutItems.length > 0) {
         checkoutContainer.classList.remove("hidden")
@@ -102,7 +134,7 @@ function renderCheckout() {
         checkoutContainer.classList.add("hidden")
     }
     const checkoutHtml = checkoutItems.map(item => {
-        totalPrice += item.price;
+        totalPrice += item.price
         return `
             <div class="checkout-row checkout-item">
                 <div class="checkout-item-details">
@@ -111,13 +143,13 @@ function renderCheckout() {
                 </div>
                 <p class="checkout-item-price">$${item.price}</p>
             </div>
-        `;
-    }).join('');
+        `
+    }).join('')
 
     itemsList.innerHTML = checkoutHtml;
-    document.getElementById("total-price").textContent = `$${totalPrice}`;
+    document.getElementById("total-price").textContent = `$${totalPrice}`
 }
 
 
 
-albumsContainer.innerHTML = getAlbumHtml(vinylCatalog);
+albumsContainer.innerHTML = getAlbumHtml(vinylCatalog)
